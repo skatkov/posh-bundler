@@ -65,21 +65,13 @@ class BundlerIntegrationTest < Minitest::Test
 
   def prepare_gem_repository
     repository = File.join(@directory, "repository")
-    source = File.join(@directory, "plugin source")
     gems = File.join(repository, "gems")
-    FileUtils.mkdir_p([source, gems])
+    FileUtils.mkdir_p(gems)
 
     spec = Gem::Specification.load(File.join(PLUGIN_ROOT, "posh-bundler.gemspec"))
-    spec.files.each do |file|
-      destination = File.join(source, file)
-      FileUtils.mkdir_p(File.dirname(destination))
-      FileUtils.cp(File.join(PLUGIN_ROOT, file), destination)
-    end
-
     Gem::DefaultUserInteraction.use_ui(Gem::SilentUI.new) do
-      Dir.chdir(source) { Gem::Package.build(spec) }
+      Dir.chdir(PLUGIN_ROOT) { Gem::Package.build(spec, false, false, File.join(gems, spec.file_name)) }
     end
-    FileUtils.mv(File.join(source, spec.file_name), gems)
 
     # A minimal static RubyGems repository keeps every Bundler version offline.
     quick = File.join(repository, "quick", "Marshal.4.8")
