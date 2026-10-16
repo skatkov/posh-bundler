@@ -113,9 +113,24 @@ bundle plugin install posh-bundler --path /absolute/path/to/posh-bundler
 Bundler runs a path-installed plugin directly from that directory. Reinstall it
 after changing hook registrations in `plugins.rb`.
 
-The source includes a gemspec and a build task; publishing to RubyGems is a
-separate release step. The RubyGems install command above works once the gem has
-been published.
+## Releasing
+
+Set the release version in `lib/posh_bundler/version.rb` and commit all changes.
+Then run:
+
+```sh
+bundle exec rake test
+bundle exec standardrb
+bundle exec rake release
+```
+
+The release task uses Bundler's standard gem tasks. It builds the gem in `pkg/`,
+checks for uncommitted changes, creates a `vVERSION` tag (for example, `v0.1.0`),
+pushes the current branch and tag to its Git remote, and publishes the gem to
+RubyGems. You need Git push access and RubyGems authentication with MFA enabled.
+
+To build the gem without tagging, pushing, or publishing, use
+`bundle exec rake build` instead.
 
 ## License
 
